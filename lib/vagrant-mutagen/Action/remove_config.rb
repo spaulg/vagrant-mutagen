@@ -1,8 +1,12 @@
+require_relative "../mutagen"
+require_relative "../ssh"
+
 module VagrantPlugins
   module Mutagen
     module Action
       class RemoveConfig
         include Mutagen
+        include Ssh
 
         def initialize(app, env)
           @app = app
@@ -15,16 +19,15 @@ module VagrantPlugins
           if machine_action != :destroy || !@machine.id
             if machine_action != :suspend
               if machine_action != :halt
-                if mutagen_enabled
+                if is_enabled
                   @ui.info "[vagrant-mutagen] Removing SSH config entry"
-                  removeConfigEntries
+                  remove_config_entries
                 end
               end
             end
           end
           @app.call(env)
         end
-
       end
     end
   end

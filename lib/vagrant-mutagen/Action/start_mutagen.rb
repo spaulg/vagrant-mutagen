@@ -1,10 +1,12 @@
-require_relative "../Mutagen"
+require_relative "../mutagen"
+require_relative "../ssh"
+
 module VagrantPlugins
   module Mutagen
     module Action
-      class StartOrchestration
+      class StartMutagen
         include Mutagen
-
+        include Ssh
 
         def initialize(app, env)
           @app = app
@@ -13,12 +15,11 @@ module VagrantPlugins
         end
 
         def call(env)
-          if mutagen_enabled
-            startOrchestration
+          if is_enabled
+            start_project
           end
           @app.call(env)
         end
-
       end
     end
   end

@@ -1,10 +1,12 @@
-require_relative "../Mutagen"
+require_relative "../mutagen"
+require_relative "../ssh"
+
 module VagrantPlugins
   module Mutagen
     module Action
-      class TerminateOrchestration
+      class UpdateConfig
         include Mutagen
-
+        include Ssh
 
         def initialize(app, env)
           @app = app
@@ -13,12 +15,15 @@ module VagrantPlugins
         end
 
         def call(env)
-          if mutagen_enabled
-            terminateOrchestration
+          @ui.info "[vagrant-mutagen] In update config hook"
+
+          if is_enabled
+            @ui.info "[vagrant-mutagen] Checking for SSH config entries"
+            add_config_entries()
           end
+
           @app.call(env)
         end
-
       end
     end
   end
