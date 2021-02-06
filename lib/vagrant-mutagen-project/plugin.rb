@@ -1,8 +1,8 @@
-require "vagrant-mutagen-project/action/update_config"
-require "vagrant-mutagen-project/action/cache_config"
-require "vagrant-mutagen-project/action/remove_config"
-require "vagrant-mutagen-project/action/start_mutagen"
-require "vagrant-mutagen-project/action/terminate_mutagen"
+require "vagrant-mutagen-project/action/start_mutagen_project"
+require "vagrant-mutagen-project/action/pause_mutagen_project"
+require "vagrant-mutagen-project/action/resume_mutagen_project"
+require "vagrant-mutagen-project/action/terminate_mutagen_project"
+require "yaml"
 
 module VagrantPlugins
   module MutagenProject
@@ -19,38 +19,29 @@ module VagrantPlugins
       end
 
       action_hook(:mutagen, :machine_action_up) do |hook|
-        hook.after(Vagrant::Action::Builtin::WaitForCommunicator, Action::StartMutagen)
-        hook.after(Vagrant::Action::Builtin::WaitForCommunicator, Action::UpdateConfig)
-      end
-
-      action_hook(:mutagen, :machine_action_halt) do |hook|
-        hook.append(Action::TerminateMutagen)
-        hook.append(Action::RemoveConfig)
-      end
-
-      action_hook(:mutagen, :machine_action_suspend) do |hook|
-        hook.append(Action::TerminateMutagen)
-        hook.append(Action::RemoveConfig)
+        hook.after(Vagrant::Action::Builtin::WaitForCommunicator, Action::StartMutagenProject)
       end
 
       action_hook(:mutagen, :machine_action_destroy) do |hook|
-        hook.prepend(Action::CacheConfig)
-        hook.append(Action::TerminateMutagen)
-        hook.append(Action::RemoveConfig)
+        hook.after(Vagrant::Action::Builtin::DestroyConfirm, Action::TerminateMutagenProject)
+      end
+
+      action_hook(:mutagen, :machine_action_halt) do |hook|
+        hook.before(Vagrant::Action::Builtin::GracefulHalt, Action::PauseMutagenProject)
+      end
+
+      action_hook(:mutagen, :machine_action_suspend) do |hook|
+        hook.before(VagrantPlugins::HyperV::Action::SuspendVM, Action::PauseMutagenProject)
+        hook.before(VagrantPlugins::ProviderVirtualBox::Action::Suspend, Action::PauseMutagenProject)
       end
 
       action_hook(:mutagen, :machine_action_reload) do |hook|
-        hook.append(Action::TerminateMutagen)
-        hook.prepend(Action::RemoveConfig)
-        hook.after(Vagrant::Action::Builtin::WaitForCommunicator, Action::UpdateConfig)
-        hook.after(Vagrant::Action::Builtin::WaitForCommunicator, Action::StartMutagen)
+        hook.before(Vagrant::Action::Builtin::GracefulHalt, Action::PauseMutagenProject)
+        hook.after(Vagrant::Action::Builtin::WaitForCommunicator, Action::ResumeMutagenProject)
       end
 
       action_hook(:mutagen, :machine_action_resume) do |hook|
-        hook.append(Action::TerminateMutagen)
-        hook.prepend(Action::RemoveConfig)
-        hook.after(Vagrant::Action::Builtin::WaitForCommunicator, Action::UpdateConfig)
-        hook.after(Vagrant::Action::Builtin::WaitForCommunicator, Action::StartMutagen)
+        hook.after(Vagrant::Action::Builtin::WaitForCommunicator, Action::ResumeMutagenProject)
       end
     end
   end

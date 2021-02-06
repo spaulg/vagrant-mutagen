@@ -1,22 +1,23 @@
 require_relative "../mutagen"
-require_relative "../ssh"
 
 module VagrantPlugins
   module MutagenProject
     module Action
-      class CacheConfig
+      class ResumeMutagenProject
         include Mutagen
-        include Ssh
 
         def initialize(app, env)
           @app = app
           @machine = env[:machine]
+          @ui = env[:ui]
         end
 
         def call(env)
           if is_enabled
-            cache_config_entries
+            @ui.info "[vagrant-mutagen-project] Resuming Mutagen sync"
+            resume_project
           end
+
           @app.call(env)
         end
       end

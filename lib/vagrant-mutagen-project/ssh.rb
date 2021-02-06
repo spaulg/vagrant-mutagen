@@ -5,6 +5,21 @@ module VagrantPlugins
     module Ssh
       SSH_CONFIG_PATH = File.expand_path('~/.ssh/config')
 
+      def sudo(command)
+        return unless command
+
+        if Vagrant::Util::Platform.windows?
+          require 'win32ole'
+
+          args = command.split(" ")
+          command = args.shift
+          sh = WIN32OLE.new('Shell.Application')
+          sh.ShellExecute(command, args.join(" "), '', 'runas', 0)
+        else
+          system("sudo #{command}")
+        end
+      end
+
       def add_config_entries
         # Prepare some needed variables
         uuid = @machine.id
@@ -46,7 +61,7 @@ module VagrantPlugins
           end
         elsif Vagrant::Util::Platform.windows?
           require 'tmpdir'
-          uuid = @machine.id || @machine.config.mutagen.id
+          uuid = @machine.id
           tmp_path = File.join(Dir.tmpdir, 'hosts-' + uuid + '.cmd')
 
           File.open(tmp_path, "w") do |tmpFile|
@@ -84,19 +99,15 @@ module VagrantPlugins
         %Q(#{signature(name, uuid)}\n#{sshconfig}\n#{signature(name, uuid)})
       end
 
-      def cache_config_entries
-        @machine.config.mutagen.id = @machine.id
-      end
-
       def remove_config_entries
-        if !@machine.id and !@machine.config.mutagen.id
+        unless @machine.id
           @ui.info "[vagrant-mutagen-project] No machine id, nothing removed from #{SSH_CONFIG_PATH}"
           return
         end
 
         file = File.open(SSH_CONFIG_PATH, "rb")
         config_contents = file.read
-        uuid = @machine.id || @machine.config.mutagen.id
+        uuid = @machine.id
 
         hashed_id = Digest::MD5.hexdigest(uuid)
         if config_contents.match(/#{hashed_id}/)
@@ -105,7 +116,7 @@ module VagrantPlugins
       end
 
       def remove_from_config(options = {})
-        uuid = @machine.id || @machine.config.mutagen.id
+        uuid = @machine.id
         hashed_id = Digest::MD5.hexdigest(uuid)
 
         if !File.writable_real?(SSH_CONFIG_PATH) || Vagrant::Util::Platform.windows?

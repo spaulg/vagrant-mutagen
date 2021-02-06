@@ -4,7 +4,7 @@ require_relative "../ssh"
 module VagrantPlugins
   module MutagenProject
     module Action
-      class StartMutagen
+      class TerminateMutagenProject
         include Mutagen
         include Ssh
 
@@ -15,10 +15,18 @@ module VagrantPlugins
         end
 
         def call(env)
-          if is_enabled
-            start_project
+          if is_enabled && is_destroy_confirmed(env)
+            terminate_project
+
+            @ui.info "[vagrant-mutagen-project] Removing SSH config entry"
+            remove_config_entries
           end
+
           @app.call(env)
+        end
+
+        def is_destroy_confirmed(env)
+          env[:force_confirm_destroy_result]
         end
       end
     end

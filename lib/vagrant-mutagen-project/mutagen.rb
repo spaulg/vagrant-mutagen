@@ -3,21 +3,6 @@ require "shellwords"
 module VagrantPlugins
   module MutagenProject
     module Mutagen
-      def sudo(command)
-        return unless command
-
-        if Vagrant::Util::Platform.windows?
-          require 'win32ole'
-
-          args = command.split(" ")
-          command = args.shift
-          sh = WIN32OLE.new('Shell.Application')
-          sh.ShellExecute(command, args.join(" "), '', 'runas', 0)
-        else
-          system("sudo #{command}")
-        end
-      end
-
       def is_enabled()
         @machine.config.mutagen.orchestrate == true
       end
@@ -65,6 +50,24 @@ module VagrantPlugins
         end
 
         system(project_status_command)
+      end
+
+      def pause_project
+        project_file = @machine.config.mutagen.project_file
+
+        pause_project_command = "mutagen project pause -f %s" % [Shellwords.escape(project_file)]
+        unless system(pause_project_command)
+          @ui.error "[vagrant-mutagen-project] Failed to pause mutagen project"
+        end
+      end
+
+      def resume_project
+        project_file = @machine.config.mutagen.project_file
+
+        resume_project_command = "mutagen project resume -f %s" % [Shellwords.escape(project_file)]
+        unless system(resume_project_command)
+          @ui.error "[vagrant-mutagen-project] Failed to resume mutagen project"
+        end
       end
     end
   end
