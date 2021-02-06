@@ -2,7 +2,7 @@ require "shellwords"
 
 module VagrantPlugins
   module MutagenProject
-    module Ssh
+    module SSHConfig
       SSH_CONFIG_PATH = File.expand_path('~/.ssh/config')
 
       def sudo(command)

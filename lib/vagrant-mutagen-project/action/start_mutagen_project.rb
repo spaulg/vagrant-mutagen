@@ -1,12 +1,12 @@
 require_relative "../mutagen"
-require_relative "../ssh"
+require_relative "../ssh_config"
 
 module VagrantPlugins
   module MutagenProject
     module Action
       class StartMutagenProject
         include Mutagen
-        include Ssh
+        include SSHConfig
 
         def initialize(app, env)
           @app = app
