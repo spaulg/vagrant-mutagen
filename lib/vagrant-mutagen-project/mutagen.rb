@@ -1,7 +1,7 @@
 require "shellwords"
 
 module VagrantPlugins
-  module Mutagen
+  module MutagenProject
     module Mutagen
       def sudo(command)
         return unless command
@@ -26,7 +26,7 @@ module VagrantPlugins
         daemon_command = "mutagen daemon start"
 
         unless system(daemon_command)
-          @ui.error "[vagrant-mutagen] Failed to start mutagen daemon"
+          @ui.error "[vagrant-mutagen-project] Failed to start mutagen daemon"
         end
       end
 
@@ -39,10 +39,10 @@ module VagrantPlugins
         project_status_command = "mutagen project list -f %s" % [Shellwords.escape(project_file)]
 
         unless system(project_started_command) # mutagen project list returns 1 on error when no project is started
-          @ui.info "[vagrant-mutagen] Starting mutagen project orchestration (config: %s)" % project_file
+          @ui.info "[vagrant-mutagen-project] Starting mutagen project orchestration (config: %s)" % project_file
 
           unless system(project_start_command)
-            @ui.error "[vagrant-mutagen] Failed to start mutagen project (see error above)"
+            @ui.error "[vagrant-mutagen-project] Failed to start mutagen project (see error above)"
           end
         end
 
@@ -57,10 +57,10 @@ module VagrantPlugins
         project_status_command = "mutagen project list -f %s 2>/dev/null" % [Shellwords.escape(project_file)]
 
         if system(project_started_command) # mutagen project list returns 1 on error when no project is started
-          @ui.info "[vagrant-mutagen] Stopping mutagen project orchestration"
+          @ui.info "[vagrant-mutagen-project] Stopping mutagen project orchestration"
 
           unless system(project_terminate_command)
-            @ui.error "[vagrant-mutagen] Failed to stop mutagen project (see error above)"
+            @ui.error "[vagrant-mutagen-project] Failed to stop mutagen project (see error above)"
           end
         end
 

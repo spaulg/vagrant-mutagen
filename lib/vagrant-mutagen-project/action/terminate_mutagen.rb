@@ -2,7 +2,7 @@ require_relative "../mutagen"
 require_relative "../ssh"
 
 module VagrantPlugins
-  module Mutagen
+  module MutagenProject
     module Action
       class TerminateMutagen
         include Mutagen

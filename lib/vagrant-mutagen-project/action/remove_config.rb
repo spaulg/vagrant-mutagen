@@ -2,7 +2,7 @@ require_relative "../mutagen"
 require_relative "../ssh"
 
 module VagrantPlugins
-  module Mutagen
+  module MutagenProject
     module Action
       class RemoveConfig
         include Mutagen
@@ -20,7 +20,7 @@ module VagrantPlugins
             if machine_action != :suspend
               if machine_action != :halt
                 if is_enabled
-                  @ui.info "[vagrant-mutagen] Removing SSH config entry"
+                  @ui.info "[vagrant-mutagen-project] Removing SSH config entry"
                   remove_config_entries
                 end
               end

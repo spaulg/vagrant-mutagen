@@ -2,7 +2,7 @@ Vagrant.configure(2) do |config|
   # Machine 1
   config.vm.define "node1" do |node|
     node.vm.box = "ubuntu/focal64"
-    node.vm.hostname = "vagrant-mutagen-node1"
+    node.vm.hostname = "vagrant-mutagen-project-node1"
 
     # Automatically provision mutagen to synchronise files
     # in to the VM
@@ -13,7 +13,7 @@ Vagrant.configure(2) do |config|
   # Machine 2
   config.vm.define "node2" do |node|
     node.vm.box = "ubuntu/focal64"
-    node.vm.hostname = "vagrant-mutagen-node2"
+    node.vm.hostname = "vagrant-mutagen-project-node2"
 
     # Automatically provision mutagen to synchronise files
     # in to the VM
@@ -24,7 +24,7 @@ Vagrant.configure(2) do |config|
   # Machine 3
   config.vm.define "node3" do |node|
     node.vm.box = "ubuntu/focal64"
-    node.vm.hostname = "vagrant-mutagen-node3"
+    node.vm.hostname = "vagrant-mutagen-project-node3"
 
     # Automatically provision mutagen to synchronise files
     # in to the VM

@@ -1,7 +1,7 @@
 require "shellwords"
 
 module VagrantPlugins
-  module Mutagen
+  module MutagenProject
     module Ssh
       SSH_CONFIG_PATH = File.expand_path('~/.ssh/config')
 
@@ -18,10 +18,10 @@ module VagrantPlugins
         # Check for existing entry for hostname in config
         entry_pattern = config_entry_pattern(hostname, name, uuid)
         if config_contents.match(/#{entry_pattern}/)
-          @ui.info "[vagrant-mutagen]   updating SSH Config entry for: #{hostname}"
+          @ui.info "[vagrant-mutagen-project]   updating SSH Config entry for: #{hostname}"
           remove_config_entries
         else
-          @ui.info "[vagrant-mutagen]   adding entry to SSH config for: #{hostname}"
+          @ui.info "[vagrant-mutagen-project]   adding entry to SSH config for: #{hostname}"
         end
 
         # Get SSH config from Vagrant
@@ -34,15 +34,15 @@ module VagrantPlugins
       def add_to_ssh_config(content)
         return if content.length == 0
 
-        @ui.info "[vagrant-mutagen] Writing the following config to (#SSH_CONFIG_PATH)"
+        @ui.info "[vagrant-mutagen-project] Writing the following config to (#{SSH_CONFIG_PATH})"
         @ui.info content
 
         if !File.writable_real?(SSH_CONFIG_PATH)
-          @ui.info "[vagrant-mutagen] This operation requires administrative access. You may " +
+          @ui.info "[vagrant-mutagen-project] This operation requires administrative access. You may " +
                        "skip it by manually adding equivalent entries to the config file."
 
-          unless sudo(%Q(sh -c 'echo "#{content}" >> #SSH_CONFIG_PATH'))
-            @ui.error "[vagrant-mutagen] Failed to add config, could not use sudo"
+          unless sudo(%Q(sh -c 'echo "#{content}" >> #{SSH_CONFIG_PATH}'))
+            @ui.error "[vagrant-mutagen-project] Failed to add config, could not use sudo"
           end
         elsif Vagrant::Util::Platform.windows?
           require 'tmpdir'
@@ -90,7 +90,7 @@ module VagrantPlugins
 
       def remove_config_entries
         if !@machine.id and !@machine.config.mutagen.id
-          @ui.info "[vagrant-mutagen] No machine id, nothing removed from #SSH_CONFIG_PATH"
+          @ui.info "[vagrant-mutagen-project] No machine id, nothing removed from #{SSH_CONFIG_PATH}"
           return
         end
 
@@ -109,8 +109,8 @@ module VagrantPlugins
         hashed_id = Digest::MD5.hexdigest(uuid)
 
         if !File.writable_real?(SSH_CONFIG_PATH) || Vagrant::Util::Platform.windows?
-          unless sudo(%Q(sed -i -e '/# VAGRANT: #{hashed_id}/,/# VAGRANT: #{hashed_id}/d' #SSH_CONFIG_PATH))
-            @ui.error "[vagrant-mutagen] Failed to remove config, could not use sudo"
+          unless sudo(%Q(sed -i -e '/# VAGRANT: #{hashed_id}/,/# VAGRANT: #{hashed_id}/d' #{SSH_CONFIG_PATH}))
+            @ui.error "[vagrant-mutagen-project] Failed to remove config, could not use sudo"
           end
         else
           hosts = ""

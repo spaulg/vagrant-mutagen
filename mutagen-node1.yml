@@ -1,7 +1,7 @@
 sync:
-  vagrant-mutagen-node1:
+  vagrant-mutagen-project-node1:
     alpha: '.'
-    beta: 'vagrant-mutagen-node1:/home/vagrant/vagrant-mutagen'
+    beta: 'vagrant-mutagen-project-node1:/home/vagrant/vagrant-mutagen-project'
     mode: 'two-way-resolved'
     flushOnCreate: true
     ignore:

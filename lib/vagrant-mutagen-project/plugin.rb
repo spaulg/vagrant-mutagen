@@ -1,13 +1,13 @@
-require "vagrant-mutagen/Action/update_config"
-require "vagrant-mutagen/Action/cache_config"
-require "vagrant-mutagen/Action/remove_config"
-require "vagrant-mutagen/Action/start_mutagen"
-require "vagrant-mutagen/Action/terminate_mutagen"
+require "vagrant-mutagen-project/action/update_config"
+require "vagrant-mutagen-project/action/cache_config"
+require "vagrant-mutagen-project/action/remove_config"
+require "vagrant-mutagen-project/action/start_mutagen"
+require "vagrant-mutagen-project/action/terminate_mutagen"
 
 module VagrantPlugins
-  module Mutagen
+  module MutagenProject
     class Plugin < Vagrant.plugin('2')
-      name 'Mutagen'
+      name 'Mutagen-Project'
       description <<-DESC
         This plugin manages the ~/.ssh/config file for the host machine. An entry is
         created for the hostname attribute in the vm.config.
